@@ -11,8 +11,6 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-cdk/aws-lambda-nodejs": "^1.181.1",
-    "@aws-cdk/aws-lambda-python": "^1.181.1",
     "@types/babel__traverse": "7.18.2",
     "@types/jest": "^27.5.2",
     "@types/node": "10.17.27",
