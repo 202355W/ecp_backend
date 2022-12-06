@@ -7,6 +7,7 @@ import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as opensearch from "aws-cdk-lib/aws-opensearchservice";
 import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
 import { Duration } from "aws-cdk-lib";
+import * as lambda from "aws-cdk-lib/aws-lambda";
 
 export class EcpBackendStack extends cdk.Stack {
 
@@ -34,7 +35,7 @@ export class EcpBackendStack extends cdk.Stack {
                     subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
                 },
             ],
-        })
+        });
 
         this.bucket = new s3.Bucket(this, "jobeasy-uploads", {
             accessControl: s3.BucketAccessControl.PUBLIC_READ,
@@ -65,6 +66,15 @@ export class EcpBackendStack extends cdk.Stack {
 
         this.dynamo = new dynamodb.Table(this, 'Table', {
             partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+        });
+
+        const apiLambda = new lambda.Function(this, "api-lambda", {
+            
+
+        });
+
+        this.apiGateway = new LambdaRestApi(this, "jobeasy-api", {
+            handler: 
         });
 
         this.opensearch = new opensearch.Domain(this, 'Domain', {
