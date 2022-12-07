@@ -8,6 +8,7 @@ import * as opensearch from "aws-cdk-lib/aws-opensearchservice";
 import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
 import { Duration } from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as path from "path";
 
 export class EcpBackendStack extends cdk.Stack {
 
@@ -69,12 +70,13 @@ export class EcpBackendStack extends cdk.Stack {
         });
 
         const apiLambda = new lambda.Function(this, "api-lambda", {
-            
-
+            runtime: lambda.Runtime.PYTHON_3_8,
+            handler: "entry.lambda_handler",
+            code: lambda.Code.fromAsset(path.join(__dirname, "..", "src", "lambdas"))
         });
 
         this.apiGateway = new LambdaRestApi(this, "jobeasy-api", {
-            handler: 
+            handler: apiLambda,
         });
 
         this.opensearch = new opensearch.Domain(this, 'Domain', {
