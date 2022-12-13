@@ -8,17 +8,8 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v2.5.0
 
-      # - name: cdk diff
-      #   uses: youyo/aws-cdk-github-actions@v2
-      #   with:
-      #     cdk_subcommand: 'diff'
-      #     actions_comment: true
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     AWS_DEFAULT_REGION: 'ap-southeast-3'
-
       - name: cdk synth
+        # check every branch and commit for if the config is valid
         uses: youyo/aws-cdk-github-actions@v2
         with:
           cdk_subcommand: 'synth'
@@ -29,14 +20,28 @@ jobs:
           # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'ap-southeast-3'
 
-      # - name: cdk deploy
-      #   uses: youyo/aws-cdk-github-actions@v2
-      #   with:
-      #     cdk_subcommand: 'deploy'
-      #     cdk_stack: 'stack1'
-      #     cdk_args: '--require-approval never'
-      #     actions_comment: false
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     AWS_DEFAULT_REGION: 'ap-southeast-3'
+      - name: cdk diff
+        # only diff if approved
+        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+        uses: youyo/aws-cdk-github-actions@v2
+        with:
+          cdk_subcommand: 'diff'
+          actions_comment: true
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'ap-southeast-3'
+
+      - name: cdk deploy
+        # only deploy after it is finally merged to main
+        if: github.ref == 'refs/heads/main'
+        uses: youyo/aws-cdk-github-actions@v2
+        with:
+          cdk_subcommand: 'deploy'
+          cdk_stack: 'stack1'
+          cdk_args: '--require-approval never'
+          actions_comment: false
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'ap-southeast-3'
