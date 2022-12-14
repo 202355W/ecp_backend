@@ -9,6 +9,7 @@ import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
 import { Duration } from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as path from "path";
+import * as cognito from "aws-cdk-lib/aws-cognito";
 
 export class EcpBackendStack extends cdk.Stack {
 
@@ -18,12 +19,18 @@ export class EcpBackendStack extends cdk.Stack {
     // private rds_ha: rds.DatabaseCluster; // High availability
     private rds_la: rds.DatabaseInstance; // Low availability
     private dynamo: dynamodb.Table;
+    private userPool: cognito.UserPool;
     private opensearch: opensearch.Domain;
 
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
         // The code that defines your stack goes here
+
+        this.userPool = new cognito.UserPool(this, "jobeasy-users", {
+            userPoolName: "jobeasy-users",
+            signInCaseSensitive: false,
+        });
 
         this.vpc = new ec2.Vpc(this, "Backend VPC", {
             subnetConfiguration: [
