@@ -6,6 +6,7 @@ import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as opensearch from "aws-cdk-lib/aws-opensearchservice";
 import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
+import { Duration } from "aws-cdk-lib";
 
 export class EcpBackendStack extends cdk.Stack {
 
@@ -44,6 +45,7 @@ export class EcpBackendStack extends cdk.Stack {
                     transitions: [
                         {
                             storageClass: s3.StorageClass.INTELLIGENT_TIERING,
+                            transitionAfter: Duration.days(60),
                         }
                     ]
                 }
