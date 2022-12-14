@@ -4,6 +4,7 @@ import * as s3 from "aws-cdk-lib/aws-s3";
 import * as rds from "aws-cdk-lib/aws-rds";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
+import * as opensearch from "aws-cdk-lib/aws-opensearchservice";
 import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
 
 export class EcpBackendStack extends cdk.Stack {
@@ -14,6 +15,7 @@ export class EcpBackendStack extends cdk.Stack {
     // private rds_ha: rds.DatabaseCluster; // High availability
     private rds_la: rds.DatabaseInstance; // Low availability
     private dynamo: dynamodb.Table;
+    private opensearch: opensearch.Domain;
 
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
@@ -61,6 +63,15 @@ export class EcpBackendStack extends cdk.Stack {
 
         this.dynamo = new dynamodb.Table(this, 'Table', {
             partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+        });
+
+        this.opensearch = new opensearch.Domain(this, 'Domain', {
+            version: opensearch.EngineVersion.OPENSEARCH_1_3,
+            enableVersionUpgrade: true, // defaults to false
+            capacity: {
+                masterNodeInstanceType: "t3.small.search",
+                dataNodeInstanceType: "t3.small.search",
+            }
         });
     }
 }
